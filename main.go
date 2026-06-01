@@ -22,9 +22,7 @@ func generateRandomElements(size int) []int {
 	sliceInteger := make([]int, size)
 
 	for i := 0; i < size; i++ {
-		rnd := rand.Intn(size)
-		sliceInteger[i] = rnd + 1 //  задание требует целые положительные числа
-
+		sliceInteger[i] = rand.Intn(size)
 	}
 
 	return sliceInteger
@@ -57,33 +55,28 @@ func maximum(data []int) int {
 func maxChunks(data []int) int {
 
 	var wg sync.WaitGroup
-	var mu sync.Mutex
 
-	sliceMaxSlice := []int{}        // слайс для хранения максимальных чисел для дальнейшего перебора
-	lenSlice := len(data)           // длина слайса
-	valueSlice := lenSlice / CHUNKS // размер слайса
+	sliceMaxSlice := make([]int, CHUNKS) // слайс для хранения максимальных чисел для дальнейшего перебора
+	lenSlice := len(data)                // длина слайса
+	valueSlice := (lenSlice / CHUNKS)    // размер слайса
 
-	for i := 0; i < 8; i++ {
+	for i := 0; i < CHUNKS; i++ {
 
 		startSlice := i * valueSlice        // начальный индекс
 		endSlice := startSlice + valueSlice // конечный индекс
 
 		wg.Add(1)
-		go func(start, end int) {
+		go func(start, end, i int) {
 			defer wg.Done()
-
-			max := data[0]
-
-			for _, v := range data[start:end] {
-				if max < v {
-					max = v
-				}
+			var res int
+			if i == CHUNKS-1 {
+				res = maximum(data[start:])
+			} else {
+				res = maximum(data[start:end])
 			}
-			mu.Lock() // блокируем критическую секцию кода
-			sliceMaxSlice = append(sliceMaxSlice, max)
-			mu.Unlock() // разблокируем критическую секцию кода
-		}(startSlice, endSlice)
+			sliceMaxSlice[i] = res
 
+		}(startSlice, endSlice, i)
 	}
 	wg.Wait()
 	return maximum(sliceMaxSlice)
