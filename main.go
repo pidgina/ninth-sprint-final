@@ -22,7 +22,7 @@ func generateRandomElements(size int) []int {
 	sliceInteger := make([]int, size)
 
 	for i := 0; i < size; i++ {
-		sliceInteger[i] = rand.Intn(size)
+		sliceInteger[i] = rand.Int()
 	}
 
 	return sliceInteger
@@ -65,18 +65,19 @@ func maxChunks(data []int) int {
 		startSlice := i * valueSlice        // начальный индекс
 		endSlice := startSlice + valueSlice // конечный индекс
 
-		wg.Add(1)
-		go func(start, end, i int) {
-			defer wg.Done()
-			var res int
-			if i == CHUNKS-1 {
-				res = maximum(data[start:])
-			} else {
-				res = maximum(data[start:end])
-			}
-			sliceMaxSlice[i] = res
+		var res []int
+		if i == CHUNKS-1 {
+			res = data[startSlice:]
+		} else {
+			res = data[startSlice:endSlice]
+		}
 
-		}(startSlice, endSlice, i)
+		wg.Add(1)
+		go func(res []int, i int) {
+			defer wg.Done()
+			sliceMaxSlice[i] = maximum(res)
+
+		}(res, i)
 	}
 	wg.Wait()
 	return maximum(sliceMaxSlice)

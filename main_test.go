@@ -36,6 +36,8 @@ func TestGenerateRandomElements(t *testing.T) {
 
 func TestMaximum(t *testing.T) {
 
+	var tesers1 []int
+
 	tests := []struct {
 		name     string
 		input    []int
@@ -49,6 +51,8 @@ func TestMaximum(t *testing.T) {
 		{"в слайсе первый элемент максимальный: 999", []int{999, 123, 321, 500, 1}, 999},
 		{"в слайсе последний элемент максимальный: 999", []int{1, 123, 321, 500, 999}, 999},
 		{"в слайсе большие числа, максимальный 9_999_999_999", []int{9_999_999_999, 1, 8_888_888_888, 500, 573_321_928, 1, 3, 6}, 9_999_999_999},
+		{"слайс не иницилизирован: вывод 0", tesers1, 0},
+		{"слайс пустой: вывод 0", []int{}, 0},
 	}
 
 	for _, tt := range tests {
@@ -59,8 +63,5 @@ func TestMaximum(t *testing.T) {
 		})
 
 	}
-
-	assert.Equal(t, 0, maximum(nil))
-	assert.Equal(t, 0, maximum([]int{}))
 
 }
